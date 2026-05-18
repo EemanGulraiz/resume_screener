@@ -1,7 +1,13 @@
 import spacy
+import subprocess
+import sys
 
-# Load the English language model
-nlp = spacy.load("en_core_web_sm")
+# Load spaCy model safely — auto downloads if not found
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm"])
+    nlp = spacy.load("en_core_web_sm")
 
 # Our skills vocabulary — you can keep adding to this list!
 SKILLS_LIST = [
