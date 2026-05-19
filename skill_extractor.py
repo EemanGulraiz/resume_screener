@@ -2,12 +2,16 @@ import spacy
 import subprocess
 import sys
 
-# Load spaCy model safely — auto downloads if not found
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm"])
-    nlp = spacy.load("en_core_web_sm")
+def load_spacy_model():
+    try:
+        return spacy.load("en_core_web_sm")
+    except OSError:
+        subprocess.run([
+            sys.executable, "-m", "spacy", "download", "en_core_web_sm"
+        ])
+        return spacy.load("en_core_web_sm")
+
+nlp = load_spacy_model()
 
 # Our skills vocabulary — you can keep adding to this list!
 SKILLS_LIST = [
