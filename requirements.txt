@@ -3,3 +3,4 @@ streamlit
 sentence-transformers
 scikit-learn
 plotly
+torchvision
