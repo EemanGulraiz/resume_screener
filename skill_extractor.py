@@ -1,19 +1,5 @@
-import spacy
-import subprocess
-import sys
+# No spaCy needed — we use simple keyword matching instead
 
-def load_spacy_model():
-    try:
-        return spacy.load("en_core_web_sm")
-    except OSError:
-        subprocess.run([
-            sys.executable, "-m", "spacy", "download", "en_core_web_sm"
-        ])
-        return spacy.load("en_core_web_sm")
-
-nlp = load_spacy_model()
-
-# Our skills vocabulary — you can keep adding to this list!
 SKILLS_LIST = [
     # Programming Languages
     "python", "java", "javascript", "typescript", "c++", "c#", "r", "sql",
@@ -46,23 +32,18 @@ def extract_skills(text):
     """Find all skills mentioned in a piece of text."""
     text_lower = text.lower()
     found_skills = set()
-
     for skill in SKILLS_LIST:
         if skill in text_lower:
             found_skills.add(skill)
-
     return found_skills
 
 def get_skill_gap(resume_text, jd_text):
-    """
-    Compare skills in resume vs job description.
-    Returns matched skills and missing skills.
-    """
+    """Compare skills in resume vs job description."""
     resume_skills = extract_skills(resume_text)
     jd_skills = extract_skills(jd_text)
 
-    matched = resume_skills & jd_skills      # skills in both
-    missing = jd_skills - resume_skills      # skills in JD but not resume
+    matched = resume_skills & jd_skills
+    missing = jd_skills - resume_skills
 
     return {
         "matched": sorted(list(matched)),
@@ -70,28 +51,3 @@ def get_skill_gap(resume_text, jd_text):
         "resume_skills": sorted(list(resume_skills)),
         "jd_skills": sorted(list(jd_skills)),
     }
-
-
-# ── TEST IT ──
-if __name__ == "__main__":
-    resume = """
-    Experienced Python developer with knowledge of Django, REST API,
-    PostgreSQL, and Git. Worked with machine learning and scikit-learn.
-    Good communication and teamwork skills.
-    """
-
-    jd = """
-    Looking for a Python developer with Django and Flask experience.
-    Must know Docker, AWS, and PostgreSQL. Experience with machine learning
-    and deep learning is preferred. Strong communication skills required.
-    """
-
-    result = get_skill_gap(resume, jd)
-
-    print("✅ Matched Skills:")
-    for skill in result["matched"]:
-        print(f"   - {skill}")
-
-    print("\n❌ Missing Skills:")
-    for skill in result["missing"]:
-        print(f"   - {skill}")
